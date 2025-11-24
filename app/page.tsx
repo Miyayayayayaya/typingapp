@@ -1,7 +1,40 @@
 import styles from './page.module.css';
 import typingGameData from './date';
-const renderText=(inputCount:number,isMistake:boolean,currentTargetText:string,className:string)=>{
+import {useState,useEffect} from 'react';
+import GameState from './state';
+
+type SetState<T>=React.Dispatch<React.SetStateAction<T>>;
+
+const updateState=(keyPressed:string,currentState:GameState,setGameState:SetState<GameState>)=>{
+  if(!currentState.isGaming)return;
+  const nextChar=currentState.currentTargetText[currentState.inputCount];
+  let newInputCount=currentState.inputCount;
+  let newIsMistake=currentState.isMistake;
+  if(keyPressed.length===1){
+    if(keyPressed===nextChar){
+      newInputCount++;
+      newIsMistake=false;
+    }else{
+      newIsMistake=true;
+    }
+  }
+  setGameState({
+    ...currentState,
+    inputCount:newInputCount,
+    isMistake:newIsMistake,
+  })
+}
+
+export default function Home() {
+  const [gameState,setGameState]=useState({
+    currentTargetText:"りんご",
+    inputCount:0,
+    isMistake: false,
+    isGaming: false,
+  })
+  const renderText=(inputCount:number,isMistake:boolean,currentTargetText:string)=>{
   let displayDivText:string="";
+  let className:string="";
   for(let i=0;i<currentTargetText.length;i++){
     const char:string=currentTargetText[i];
     for (let i=0; i<currentTargetText.length; i++){
@@ -19,19 +52,22 @@ const renderText=(inputCount:number,isMistake:boolean,currentTargetText:string,c
   }
   return displayDivText;
 }
+  useEffect(()=>{
+    const handleKeyDown=(event:KeyboardEvent)=>{
+      updateState(event.key,gameState,setGameState);
+    };
+    document.addEventListener('keydown',handleKeyDown);
+    return ()=>{
+      document.removeEventListener('keydown',handleKeyDown);
+    }
+  },[gameState])
 
-export default function Home() {
-  let className:string=""
-  const currentTargetText:string="taipingu";
-  const inputCount:number=0;
-  const isMistake:boolean=false;
-  const textDisplayElement=document.getElementById("typing-text");
-  renderText(inputCount,isMistake,currentTargetText,className)
+  renderText(gameState.inputCount,gameState.isMistake,gameState.currentTargetText)
   const problem=typingGameData;
   return (
     <div className={styles.container}>
       <div className={styles.board}>
-        {renderText(inputCount,isMistake,currentTargetText,className)}
+        {renderText(gameState.inputCount,gameState.isMistake,gameState.currentTargetText)}
       </div>
     </div>
   );
