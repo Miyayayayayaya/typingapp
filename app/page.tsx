@@ -1,17 +1,10 @@
 import styles from './page.module.css';
 import typingGameData from './date';
-
-
-export default function Home() {
-  let currentTargetText:string="taipingu";
-  let inputCount:number=0;
-  let isMistake:boolean=false;
-
-  const textDisplayElement=document.getElementById("typing-text");
-  const renderText=(inputCount:number)=>{
-    let outputHTML:string="";
+const renderText=(inputCount:number,isMistake:boolean,currentTargetText:string,className:string)=>{
+  let displayDivText:string="";
+  for(let i=0;i<currentTargetText.length;i++){
+    const char:string=currentTargetText[i];
     for (let i=0; i<currentTargetText.length; i++){
-      let className:string="";
       if (i<inputCount){
         className="correct";
       }
@@ -21,13 +14,24 @@ export default function Home() {
       else{
         className="untyped";
       }
+      displayDivText+='<div className={'+className+'}>'+char+'</div>';
     }
   }
+  return displayDivText;
+}
+
+export default function Home() {
+  let className:string=""
+  const currentTargetText:string="taipingu";
+  const inputCount:number=0;
+  const isMistake:boolean=false;
+  const textDisplayElement=document.getElementById("typing-text");
+  renderText(inputCount,isMistake,currentTargetText,className)
   const problem=typingGameData;
   return (
     <div className={styles.container}>
       <div className={styles.board}>
-        <div className={className}>${char}</div>
+        {renderText(inputCount,isMistake,currentTargetText,className)}
       </div>
     </div>
   );
