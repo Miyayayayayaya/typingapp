@@ -15,10 +15,13 @@
   background-color: #c5c5c5;
 }
 .stateBoard{
-  width: 300px;
+  width: 500px;
   height: 100px;
   background-color: #ff6464
 }
+
+
+
 
 .correct{
   color: #00ff04;

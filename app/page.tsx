@@ -1,3 +1,4 @@
+"use client";
 import styles from './page.module.css';
 import typingGameData from './date';
 import {useState,useEffect} from 'react';
@@ -33,25 +34,29 @@ export default function Home() {
     isGaming: false,
   })
   const renderText=(inputCount:number,isMistake:boolean,currentTargetText:string)=>{
-  let displayDivText:string="";
-  let className:string="";
-  for(let i=0;i<currentTargetText.length;i++){
-    const char:string=currentTargetText[i];
-    for (let i=0; i<currentTargetText.length; i++){
+    return currentTargetText.split('').map((char,i)=>{
+      let className:string="";
       if (i<inputCount){
-        className="correct";
+        className=styles.correct;
       }
       else if(i===inputCount){
-        className=isMistake?"mistake":"current";
+        className=isMistake?styles.mistake:styles.current;
       }
       else{
-        className="untyped";
+        className=styles.untyped;
       }
-      displayDivText+='<div className={'+className+'}>'+char+'</div>';
-    }
+      return <span key={i} className={className}>{char}</span>;
+    })
   }
-  return displayDivText;
-}
+  const startGame=()=>{
+    setGameState(prev=>({
+      ...prev,
+      isGaming:true,
+      currentTargetText:"ringo",
+      inputCount:0,
+      isMistake:false,
+    }))
+  }
   useEffect(()=>{
     const handleKeyDown=(event:KeyboardEvent)=>{
       updateState(event.key,gameState,setGameState);
@@ -60,14 +65,18 @@ export default function Home() {
     return ()=>{
       document.removeEventListener('keydown',handleKeyDown);
     }
-  },[gameState])
-
+  },[gameState,setGameState])
+  console.log(gameState)
   renderText(gameState.inputCount,gameState.isMistake,gameState.currentTargetText)
   const problem=typingGameData;
   return (
     <div className={styles.container}>
-      <div className={styles.board}>
-        {renderText(gameState.inputCount,gameState.isMistake,gameState.currentTargetText)}
+      <div className={styles.stateBoard}>
+        <button onClick={startGame}>Start</button>
+      </div>
+      <div className={styles.board}>{gameState.isGaming?(renderText(gameState.inputCount,gameState.isMistake,gameState.currentTargetText)):(
+        <p>スタートボタンを押してください</p>
+      )}
       </div>
     </div>
   );
