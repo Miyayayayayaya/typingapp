@@ -1,20 +1,26 @@
-name: CI/CD
+name: CI
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
     steps:
-      - uses: actions/checkout@v3
-      - name: setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 22
-      - uses: actions/cache@v4
-        id: npm-cache
-        with:
-          path: 'node_modules'
-          key: npm-${{ hashFiles('package-lock.json') }}
-      - run: npm install
-        if: steps.npm-cache.outputs.cache-hit != 'true'
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - run: npm ci
+    - run: npm run build --if-present
+    - run: npm test
