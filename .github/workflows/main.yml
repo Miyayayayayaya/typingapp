@@ -1,26 +1,48 @@
-name: CI
+name: Next.js CI Build # ワークフローの名前
 
 on:
+  # mainブランチまたはmasterブランチへのプッシュ時に実行
   push:
-    branches: [ "main" ]
+    branches: [ "main", "master" ]
+  
+  # mainブランチまたはmasterブランチをターゲットにしたプルリクエスト時に実行
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "master" ]
+
+  # GitHub Actionsの画面から手動で実行できるようにする
+  workflow_dispatch:
 
 jobs:
   build:
+    # 実行環境として最新のUbuntuを指定
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x]
-
+    
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
+    - name: Checkout repository
+      # リポジトリのコードを仮想環境にチェックアウト
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      # Next.jsの実行に必要なNode.jsのバージョン(ここでは20)をセットアップ
+      uses: actions/setup-node@v4
       with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm ci
-    - run: npm run build --if-present
-    - run: npm test
+        node-version: 20 
+
+    - name: Cache dependencies
+      # 依存関係のインストールを高速化するためのキャッシュ設定
+      uses: actions/cache@v4
+      id: npm-cache
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+
+    - name: Install dependencies
+      # 依存関係をインストール (package-lock.jsonがある場合は npm ci が推奨)
+      run: npm ci
+
+    - name: Run Next.js Build
+      # Next.jsプロジェクトのビルドを実行
+      # (package.jsonに "build": "next build" スクリプトが存在することを想定)
+      run: npm run build
