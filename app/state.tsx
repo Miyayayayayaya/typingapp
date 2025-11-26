@@ -1,4 +1,6 @@
 interface GameState{
+    displayTargetText:string;
+    currentProblemIndex:number;
     currentTargetText: string;
     inputCount: number;
     isMistake: boolean;
