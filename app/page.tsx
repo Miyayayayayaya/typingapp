@@ -57,6 +57,10 @@ export default function Home() {
     inputCount:0,
     isMistake: false,
     isGaming: false,
+    startTime:null,
+    endTime:null,
+    mistakeCount:0,
+    isGameFinished:false,
   })
   const renderText=(inputCount:number,isMistake:boolean,currentTargetText:string)=>{
     return currentTargetText.split('').map((char,i)=>{
@@ -86,6 +90,7 @@ export default function Home() {
       inputCount:0,
       isMistake:false,
       currentProblemIndex:0,
+      
     }))
   }
   useEffect(()=>{

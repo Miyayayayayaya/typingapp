@@ -5,6 +5,10 @@ interface GameState{
     inputCount: number;
     isMistake: boolean;
     isGaming: boolean;
+    startTime:number|null;
+    endTime:number|null;
+    mistakeCount:number;
+    isGameFinished:boolean;
 }
 
 export default GameState
