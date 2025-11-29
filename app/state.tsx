@@ -1,4 +1,4 @@
-interface GameState{
+export interface GameState{
     displayTargetText:string;
     currentProblemIndex:number;
     currentTargetText: string;
@@ -11,4 +11,9 @@ interface GameState{
     isGameFinished:boolean;
 }
 
-export default GameState
+export interface ResultState{
+    gameState:GameState;
+    totalKeystrokes:number;
+    startGame:()=>void;
+}
+
