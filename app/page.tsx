@@ -3,30 +3,10 @@ import styles from './page.module.css';
 import typingGameData from './date';
 import {useState,useEffect} from 'react';
 import TypingItem from './types';
-import {GameState,ResultState} from './state';
-import {Results} from './results'
+import {GameState} from './state';
+import ResultScreen from './ResultScreen';
 
 type SetState<T>=React.Dispatch<React.SetStateAction<T>>;
-
-const calculateResults=(state:GameState,totalKeystrokes:number):Results|null=>{
-  if(!state.startTime||!state.endTime){
-    return null;
-  }
-  const timeElapsedMs=state.endTime-state.startTime;
-  const timeElapsedMinutes=timeElapsedMs/60000;
-  const correctInputs=totalKeystrokes;
-  const totalKeystrokesTyped=correctInputs+state.mistakeCount;
-  const accuracy=((correctInputs/totalKeystrokesTyped)*100).toFixed(2);
-  const wpm=Math.round((totalKeystrokesTyped/5)/timeElapsedMinutes);
-  return{
-    wpm:wpm,
-    accuracy:accuracy,
-    time: (timeElapsedMs/1000).toFixed(2),
-    mistakes:state.mistakeCount,
-  }
-
-}
-
 const updateState=(keyPressed:string,currentState:GameState,setGameState:SetState<GameState>,typingData:TypingItem[])=>{
   if(!currentState.isGaming)return;
   const nextChar=currentState.currentTargetText[currentState.inputCount];
@@ -88,6 +68,7 @@ export default function Home() {
     mistakeCount:0,
     isGameFinished:false,
   });
+  const totalTargetKeysStrokes=typingGameData.reduce((sum,item)=>sum+item.typingTarget.length,0);
   const renderText=(inputCount:number,isMistake:boolean,currentTargetText:string)=>{
     return currentTargetText.split('').map((char,i)=>{
       let className:string="";
@@ -141,7 +122,7 @@ export default function Home() {
       </div>
       <div className={styles.board}>
         <p>{gameState.isGaming?(gameState.displayTargetText):("")}</p>
-        {gameState.isGaming?(renderText(gameState.inputCount,gameState.isMistake,gameState.currentTargetText)):(
+        {gameState.isGaming?(renderText(gameState.inputCount,gameState.isMistake,gameState.currentTargetText)):gameState.isGameFinished?(<ResultScreen gameState={gameState} totalKeystrokes={totalTargetKeysStrokes} startGame={startGame}/>):(
         <p>スタートボタンを押してください</p>
       )}
       </div>

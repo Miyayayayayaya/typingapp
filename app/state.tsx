@@ -11,9 +11,11 @@ export interface GameState{
     isGameFinished:boolean;
 }
 
-export interface ResultState{
+export interface ResultsState{
     gameState:GameState;
     totalKeystrokes:number;
     startGame:()=>void;
 }
+
+
 
