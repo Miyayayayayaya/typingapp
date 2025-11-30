@@ -12,6 +12,19 @@ const updateState=(keyPressed:string,currentState:GameState,setGameState:SetStat
   const nextChar=currentState.currentTargetText[currentState.inputCount];
   let newInputCount=currentState.inputCount;
   if (keyPressed.length===1&&keyPressed!==nextChar){
+    if(keyPressed==='x'&&currentState.currentTargetText[currentState.inputCount]==='t'&&currentState.currentTargetText[currentState.inputCount+1]==='t'){
+      newInputCount++;
+      const newText=currentState.currentTargetText.replace('tt',()=>{
+        return 'xtut'
+      })
+      setGameState(prev=>({
+        ...prev,
+        isMistake:false,
+        inputCount:newInputCount,
+        currentTargetText:newText
+      }));
+      return;
+    }
     setGameState(prev=>({
       ...prev,
       isMistake:true,
