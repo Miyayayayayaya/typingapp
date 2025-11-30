@@ -117,14 +117,15 @@ export default function Home() {
   renderText(gameState.inputCount,gameState.isMistake,gameState.currentTargetText)
   return (
     <div className={styles.container}>
-      <div className={styles.stateBoard}>
-        <button onClick={startGame}>Start</button>
-      </div>
       <div className={styles.board}>
+        {/* <div className={styles.textbox}/> */}
         <p>{gameState.isGaming?(gameState.displayTargetText):("")}</p>
-        {gameState.isGaming?(renderText(gameState.inputCount,gameState.isMistake,gameState.currentTargetText)):gameState.isGameFinished?(<ResultScreen gameState={gameState} totalKeystrokes={totalTargetKeysStrokes} startGame={startGame}/>):(
+        <div className={styles.typingText}>
+          {gameState.isGaming?(renderText(gameState.inputCount,gameState.isMistake,gameState.currentTargetText)):gameState.isGameFinished?(<ResultScreen gameState={gameState} totalKeystrokes={totalTargetKeysStrokes} startGame={startGame}/>):(
         <p>スタートボタンを押してください</p>
       )}
+        </div>
+      {gameState.isGaming?(""):gameState.isGameFinished?(""):(<button onClick={startGame}>Start</button>)}
       </div>
     </div>
   );

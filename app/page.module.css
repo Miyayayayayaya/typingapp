@@ -8,6 +8,8 @@
   padding: 0 0.5rem;
 }
 .board {
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   width: 500px;
@@ -18,6 +20,19 @@
   width: 500px;
   height: 100px;
   background-color: #ff6464
+}
+.textbox{
+  width:400px;
+  height:50px;
+  background-color: #16467e;
+}
+
+.typingText{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width:300px;
+  height:30px;
 }
 
 
@@ -41,3 +56,5 @@
 .untyped{
   color:#707570
 }
+
+
