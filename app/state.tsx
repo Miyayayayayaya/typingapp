@@ -4,6 +4,7 @@ export interface GameState{
     currentTargetText: string;
     inputCount: number;
     isMistake: boolean;
+    isConversion:boolean;
     isGaming: boolean;
     startTime:number|null;
     endTime:number|null;

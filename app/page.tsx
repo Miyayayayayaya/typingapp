@@ -5,6 +5,7 @@ import {useState,useEffect} from 'react';
 import TypingItem from './types';
 import {GameState} from './state';
 import ResultScreen from './ResultScreen';
+import { conversion } from './Conversion';
 
 type SetState<T>=React.Dispatch<React.SetStateAction<T>>;
 const updateState=(keyPressed:string,currentState:GameState,setGameState:SetState<GameState>,typingData:TypingItem[])=>{
@@ -12,18 +13,16 @@ const updateState=(keyPressed:string,currentState:GameState,setGameState:SetStat
   const nextChar=currentState.currentTargetText[currentState.inputCount];
   let newInputCount=currentState.inputCount;
   if (keyPressed.length===1&&keyPressed!==nextChar){
-    if(keyPressed==='x'&&currentState.currentTargetText[currentState.inputCount]==='t'&&currentState.currentTargetText[currentState.inputCount+1]==='t'){
-      newInputCount++;
-      const newText=currentState.currentTargetText.replace('tt',()=>{
-        return 'xtut'
-      })
+    const newText=conversion(keyPressed,currentState,newInputCount)
+    if(newText.currentConversion){
       setGameState(prev=>({
         ...prev,
         isMistake:false,
-        inputCount:newInputCount,
-        currentTargetText:newText
-      }));
-      return;
+        inputCount:newText.newInputCount,
+        isConversion:false,
+        currentTargetText:newText.text
+    }));
+    return;
     }
     setGameState(prev=>({
       ...prev,
@@ -43,6 +42,7 @@ const updateState=(keyPressed:string,currentState:GameState,setGameState:SetStat
           currentTargetText:nextProblem.typingTarget,
           displayTargetText:nextProblem.text,
           inputCount:0,
+          isConversion:false,
           isMistake:false,
           currentProblemIndex:nextIndex,
         }));
@@ -52,6 +52,7 @@ const updateState=(keyPressed:string,currentState:GameState,setGameState:SetStat
           ...prev,
           isGaming:false,
           endTime:Date.now(),
+          isConversion:false,
           isGameFinished:true,
           displayTargetText:"GameClear",
         }));
@@ -62,6 +63,7 @@ const updateState=(keyPressed:string,currentState:GameState,setGameState:SetStat
   setGameState(prev=>({
     ...prev,
     inputCount:newInputCount,
+    isConversion:false,
     isMistake:false,
   }));
 };
@@ -75,6 +77,7 @@ export default function Home() {
     displayTargetText:initialProblem.text,
     inputCount:0,
     isMistake: false,
+    isConversion:false,
     isGaming: false,
     startTime:null,
     endTime:null,
