@@ -9,7 +9,7 @@ const typingGameData: TypingItem[]=[
     {
         "id": 2,
         "text": "使徒",
-        "typingTarget": "shito"
+        "typingTarget": "sito"
     },
     {
         "id": 3,
@@ -24,7 +24,7 @@ const typingGameData: TypingItem[]=[
     {
         "id": 5,
         "text": "碇シンジ",
-        "typingTarget": "ikarishinji"
+        "typingTarget": "ikarisinji"
     },
     {
         "id": 6,
