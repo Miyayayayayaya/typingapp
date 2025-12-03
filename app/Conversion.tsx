@@ -2,6 +2,7 @@ import {GameState} from './state';
 
 
 export const conversion=(keyPressed:string,currentState:GameState,newInputCount:number,)=>{
+    const vowel=["a","i","u","e","o"]
     let checkConversion=false
     let conversionText=""
     if(keyPressed==='x'&&currentState.currentTargetText[currentState.inputCount]==='t'&&currentState.currentTargetText[currentState.inputCount+1]==='t'){
@@ -12,21 +13,24 @@ export const conversion=(keyPressed:string,currentState:GameState,newInputCount:
         conversionText=newText
         checkConversion=true
     }
-    if(keyPressed==='h'&&currentState.currentTargetText[currentState.inputCount]==='f'&&currentState.currentTargetText[currentState.inputCount+1]==='u'){
+    if(keyPressed==='h'&&currentState.currentTargetText[currentState.inputCount]==='f'){
         newInputCount++;
-        const newText=currentState.currentTargetText.replace('fu',()=>{
-            return 'hu'
-        })
-        conversionText=newText
-        checkConversion=true
-    }
-    if(keyPressed==='h'&&currentState.currentTargetText[currentState.inputCount]==='f'&&currentState.currentTargetText[currentState.inputCount+1]==='i'){
-        newInputCount++;
-        const newText=currentState.currentTargetText.replace('fi',()=>{
-            return 'huxi'
-        })
-        conversionText=newText
-        checkConversion=true
+        for(let i=0;i<vowel.length;i++){
+            if(currentState.currentTargetText[currentState.inputCount+1]===vowel[i]){
+                if(vowel[i]==="u"){
+                    const newText=currentState.currentTargetText.replace('f'+vowel[i],()=>{
+                    return 'h'+vowel[i]
+                })
+                conversionText=newText
+                }else{
+                    const newText=currentState.currentTargetText.replace('f'+vowel[i],()=>{
+                    return 'hux'+vowel[i]
+                })
+                conversionText=newText
+                }
+                checkConversion=true
+            }
+        }
     }
     if(keyPressed==='l'&&currentState.currentTargetText[currentState.inputCount]==='r'&&currentState.currentTargetText[currentState.inputCount+1]==='u'){
         newInputCount++;

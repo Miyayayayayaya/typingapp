@@ -3,8 +3,8 @@ import TypingItem from './types';
 const typingGameData: TypingItem[]=[
     {
         "id": 1,
-        "text": "シャインマスカット",
-        "typingTarget": "shainmasukatto"
+        "text": "テスト",
+        "typingTarget": "fafifufefo"
     },
     {
         "id": 2,
@@ -44,7 +44,7 @@ const typingGameData: TypingItem[]=[
     {
         "id": 9,
         "text": "サービス、サービス！",
-        "typingTarget": "sa-bisusa-bisu!"
+        "typingTarget": "sa-bisu、sa-bisu!"
     },
     {
         "id": 10,
