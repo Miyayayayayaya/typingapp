@@ -6,6 +6,7 @@ import TypingItem from './types';
 import {GameState} from './state';
 import ResultScreen from './ResultScreen';
 import { conversion } from './Conversion';
+import Button from '@mui/material/Button';
 
 type SetState<T>=React.Dispatch<React.SetStateAction<T>>;
 const updateState=(keyPressed:string,currentState:GameState,setGameState:SetState<GameState>,typingData:TypingItem[])=>{
@@ -138,10 +139,10 @@ export default function Home() {
         <p>{gameState.isGaming?(gameState.displayTargetText):("")}</p>
         <div className={styles.typingText}>
           {gameState.isGaming?(renderText(gameState.inputCount,gameState.isMistake,gameState.currentTargetText)):gameState.isGameFinished?(<ResultScreen gameState={gameState} totalKeystrokes={totalTargetKeysStrokes} startGame={startGame}/>):(
-        <p>スタートボタンを押してください</p>
+        <div className={styles.titleBoard}>タイピングゲーム</div>
       )}
         </div>
-      {gameState.isGaming?(""):gameState.isGameFinished?(""):(<button onClick={startGame}>Start</button>)}
+      {gameState.isGaming?(""):gameState.isGameFinished?(""):(<Button onClick={startGame} variant="contained">Start</Button>)}
       </div>
     </div>
   );
