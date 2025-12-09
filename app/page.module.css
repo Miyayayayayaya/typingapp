@@ -14,7 +14,8 @@
   justify-content: center;
   width: 500px;
   height: 300px;
-  background-color: #c5c5c5;
+  background-color: #b7d1e4;
+  border:solid 5px #a3a3a6;
 }
 .stateBoard{
   width: 500px;
@@ -62,5 +63,7 @@
 .untyped{
   color:#707570
 }
+
+
 
 

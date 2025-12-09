@@ -46,6 +46,7 @@ const updateState=(keyPressed:string,currentState:GameState,setGameState:SetStat
           isConversion:false,
           isMistake:false,
           currentProblemIndex:nextIndex,
+          gameTime:0,
         }));
         return;
       }else{
@@ -84,7 +85,10 @@ export default function Home() {
     endTime:null,
     mistakeCount:0,
     isGameFinished:false,
+    isTimerActive:false,
+    gameTime:0,
   });
+  const [timerId,setTimerId]=useState<number|null>(null);
   const totalTargetKeysStrokes=typingGameData.reduce((sum,item)=>sum+item.typingTarget.length,0);
   const renderText=(inputCount:number,isMistake:boolean,currentTargetText:string)=>{
     return currentTargetText.split('').map((char,i)=>{
@@ -119,6 +123,8 @@ export default function Home() {
       endTime:null,
       mistakeCount:0,
       isGameFinished:false,
+      isTimerActive:true,
+      gameTime:0,
     }));
   }
   useEffect(()=>{
@@ -130,7 +136,41 @@ export default function Home() {
       document.removeEventListener('keydown',handleKeyDown);
     }
   },[gameState,setGameState])
-  console.log(gameState)
+  const GAME_OVER_TIME=15;
+  useEffect(()=>{
+    let intervalId:number|null=null;
+    if (gameState.isGaming&&gameState.isTimerActive){
+      intervalId=window.setInterval(()=>{
+        setGameState(prev=>{
+          const newGameTime=prev.gameTime+1;
+          if(newGameTime>=GAME_OVER_TIME){
+            return{
+              ...prev,
+              isGaming:false,
+              isTimerActive:false,
+              isGameFinished:true,
+              endTime:Date.now(),
+              displayTargetText:'時間切れ',
+              gameTime:newGameTime,
+            };
+          }
+          return{
+            ...prev,
+            gameTime:newGameTime
+          };
+        });
+      },1000);
+    }
+    return()=>{
+      if(intervalId!==null){
+        window.clearInterval(intervalId);
+      }
+      if(timerId!==null){
+        window.clearInterval(timerId);
+        setTimerId(null)
+      }
+    };
+  },[gameState.isGaming,gameState.isTimerActive,setGameState]);
   renderText(gameState.inputCount,gameState.isMistake,gameState.currentTargetText)
   return (
     <div className={styles.container}>
@@ -144,6 +184,7 @@ export default function Home() {
         </div>
       {gameState.isGaming?(""):gameState.isGameFinished?(""):(<Button onClick={startGame} variant="contained">Start</Button>)}
       </div>
+      <p>{gameState.gameTime}</p>
     </div>
   );
 }

@@ -10,6 +10,8 @@ export interface GameState{
     endTime:number|null;
     mistakeCount:number;
     isGameFinished:boolean;
+    isTimerActive:boolean;
+    gameTime:number;
 }
 
 export interface ResultsState{
