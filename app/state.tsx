@@ -13,6 +13,7 @@ export interface GameState{
     isTimerActive:boolean;
     gameTime:number;
     isResetting:boolean;
+    isGameOverNotice:boolean;
 }
 
 export interface ResultsState{

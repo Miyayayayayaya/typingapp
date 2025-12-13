@@ -37,9 +37,12 @@
 }
 
 .titleBoard{
+  display:flex;
+  flex-direction:column;
   font-size: 2rem;
   margin-top: 10px;
   margin-bottom: 60px;
+  gap:20px
 }
 
 

@@ -64,7 +64,8 @@ const updateState=(keyPressed:string,currentState:GameState,setGameState:SetStat
           endTime:Date.now(),
           isConversion:false,
           isGameFinished:true,
-          displayTargetText:"GameClear",
+          isGameOverNotice:true,
+          displayTargetText:"ゲームクリア！！！",
         }));
         return;
       }
@@ -96,6 +97,7 @@ export default function Home() {
     isTimerActive:false,
     gameTime:0,
     isResetting:false,
+    isGameOverNotice:false,
   });
   const [timerId,setTimerId]=useState<number|null>(null);
   const totalTargetKeysStrokes=typingGameData.reduce((sum,item)=>sum+item.typingTarget.length,0);
@@ -157,10 +159,11 @@ export default function Home() {
               ...prev,
               isGaming:false,
               isTimerActive:false,
-              isGameFinished:true,
+              isGameFinished:false,
               endTime:Date.now(),
-              displayTargetText:'時間切れ',
+              displayTargetText:'時間切れ！！！',
               gameTime:newGameTime,
+              isGameOverNotice:true,
             };
           }
           return{
@@ -179,7 +182,25 @@ export default function Home() {
         setTimerId(null)
       }
     };
-  },[gameState.isGaming,gameState.isTimerActive,setGameState]);
+  },[gameState.isGaming,gameState.isTimerActive,timerId,setGameState]);
+
+  useEffect(()=>{
+    let timeoutId:number|null=null;
+    if(gameState.isGameOverNotice){
+      timeoutId=window.setTimeout(()=>{
+        setGameState(prev=>({
+          ...prev,
+          isGameFinished:true,
+          isGameOverNotice:false,
+        }));
+      },3000);
+    }
+    return ()=>{
+      if(timeoutId!=null){
+        window.clearTimeout(timeoutId);
+      }
+    }
+  },[gameState.isGameOverNotice,setGameState])
   renderText(gameState.inputCount,gameState.isMistake,gameState.currentTargetText)
   return (
     <div className={styles.container}>
@@ -187,13 +208,17 @@ export default function Home() {
         {gameState.isGaming &&(<div className={styles.timerContainer}>
           <div className={`${styles.progressBar} ${gameState.isResetting ? styles.noTransition : ""}`} style={{width:`${(gameState.gameTime/GAME_OVER_TIME)*100}%`}}></div>
         </div>)}
-        <p>{gameState.isGaming?(gameState.displayTargetText):("")}</p>
+        <p className={styles.displayArea}>{(gameState.isGaming||gameState.isGameOverNotice)?(gameState.displayTargetText):("")}</p>
         <div className={styles.typingText}>
           {gameState.isGaming?(renderText(gameState.inputCount,gameState.isMistake,gameState.currentTargetText)):gameState.isGameFinished?(<ResultScreen gameState={gameState} totalKeystrokes={totalTargetKeysStrokes} startGame={startGame}/>):(
-        <div className={styles.titleBoard}>タイピングゲーム</div>
+        ("")
       )}
         </div>
-      {gameState.isGaming?(""):gameState.isGameFinished?(""):(<Button onClick={startGame} variant="contained">Start</Button>)}
+      {!(gameState.isGaming||gameState.isGameFinished||gameState.isGameOverNotice)&&(
+        <div className={styles.titleBoard}>
+          タイピングゲーム
+          <Button onClick={startGame} variant="contained">Start</Button>
+        </div>)}
       </div>
       <p>{gameState.gameTime}</p>
     </div>

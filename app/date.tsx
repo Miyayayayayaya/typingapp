@@ -4,7 +4,7 @@ const typingGameData: TypingItem[]=[
     {
         "id": 1,
         "text": "テスト",
-        "typingTarget": "fafifufefo"
+        "typingTarget": "tesuto"
     },
     {
         "id": 2,
@@ -43,8 +43,8 @@ const typingGameData: TypingItem[]=[
     },
     {
         "id": 9,
-        "text": "サービス、サービス！",
-        "typingTarget": "sa-bisu、sa-bisu!"
+        "text": "サービスサービス！",
+        "typingTarget": "sa-bisusa-bisu!"
     },
     {
         "id": 10,
