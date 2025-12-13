@@ -136,7 +136,7 @@ export default function Home() {
       document.removeEventListener('keydown',handleKeyDown);
     }
   },[gameState,setGameState])
-  const GAME_OVER_TIME=15;
+  const GAME_OVER_TIME=10;
   useEffect(()=>{
     let intervalId:number|null=null;
     if (gameState.isGaming&&gameState.isTimerActive){
@@ -175,7 +175,9 @@ export default function Home() {
   return (
     <div className={styles.container}>
       <div className={styles.board}>
-        {/* <div className={styles.textbox}/> */}
+        {gameState.isGaming &&(<div className={styles.timerContainer}>
+          <div className={styles.progressBar} style={{width:`${(gameState.gameTime/GAME_OVER_TIME)*100}%`}}></div>
+        </div>)}
         <p>{gameState.isGaming?(gameState.displayTargetText):("")}</p>
         <div className={styles.typingText}>
           {gameState.isGaming?(renderText(gameState.inputCount,gameState.isMistake,gameState.currentTargetText)):gameState.isGameFinished?(<ResultScreen gameState={gameState} totalKeystrokes={totalTargetKeysStrokes} startGame={startGame}/>):(

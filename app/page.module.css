@@ -64,6 +64,20 @@
   color:#707570
 }
 
+.timerContainer{
+  width: 400px;
+  height: 10px;
+  background-color:#ddd;
+  border-radius: 5px;
+  margin-bottom:20px;
+  overflow:hidden;
+}
+
+.progressBar{
+  height:100%;
+  background-color:#f44336;
+  transition: width 1.0s linear;
+}
 
 
 
