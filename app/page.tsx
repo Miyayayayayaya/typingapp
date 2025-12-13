@@ -40,14 +40,22 @@ const updateState=(keyPressed:string,currentState:GameState,setGameState:SetStat
         const nextProblem=typingData[nextIndex];
         setGameState(prev=>({
           ...prev,
-          currentTargetText:nextProblem.typingTarget,
-          displayTargetText:nextProblem.text,
-          inputCount:0,
-          isConversion:false,
-          isMistake:false,
-          currentProblemIndex:nextIndex,
           gameTime:0,
+          isResetting:true,
         }));
+        setTimeout(()=>{
+          setGameState(prev=>({
+            ...prev,
+            currentTargetText:nextProblem.typingTarget,
+            displayTargetText:nextProblem.text,
+            inputCount:0,
+            isConversion:false,
+            currentProblemIndex:nextIndex,
+            
+            isResetting:false,
+            isMistake:false,
+          }));
+        },50);
         return;
       }else{
         setGameState(prev=>({
@@ -87,6 +95,7 @@ export default function Home() {
     isGameFinished:false,
     isTimerActive:false,
     gameTime:0,
+    isResetting:false,
   });
   const [timerId,setTimerId]=useState<number|null>(null);
   const totalTargetKeysStrokes=typingGameData.reduce((sum,item)=>sum+item.typingTarget.length,0);
@@ -176,7 +185,7 @@ export default function Home() {
     <div className={styles.container}>
       <div className={styles.board}>
         {gameState.isGaming &&(<div className={styles.timerContainer}>
-          <div className={styles.progressBar} style={{width:`${(gameState.gameTime/GAME_OVER_TIME)*100}%`}}></div>
+          <div className={`${styles.progressBar} ${gameState.isResetting ? styles.noTransition : ""}`} style={{width:`${(gameState.gameTime/GAME_OVER_TIME)*100}%`}}></div>
         </div>)}
         <p>{gameState.isGaming?(gameState.displayTargetText):("")}</p>
         <div className={styles.typingText}>

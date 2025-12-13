@@ -79,5 +79,8 @@
   transition: width 1.0s linear;
 }
 
+.noTransition{
+  transition:none;
+}
 
 

@@ -12,6 +12,7 @@ export interface GameState{
     isGameFinished:boolean;
     isTimerActive:boolean;
     gameTime:number;
+    isResetting:boolean;
 }
 
 export interface ResultsState{
