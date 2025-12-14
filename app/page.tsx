@@ -7,6 +7,7 @@ import {GameState} from './state';
 import ResultScreen from './ResultScreen';
 import { conversion } from './Conversion';
 import Button from '@mui/material/Button';
+import BlurText from './BitsTool';
 
 type SetState<T>=React.Dispatch<React.SetStateAction<T>>;
 const updateState=(keyPressed:string,currentState:GameState,setGameState:SetState<GameState>,typingData:TypingItem[])=>{
@@ -202,6 +203,9 @@ export default function Home() {
     }
   },[gameState.isGameOverNotice,setGameState])
   renderText(gameState.inputCount,gameState.isMistake,gameState.currentTargetText)
+  const handleAnimationComplete=()=>{
+    console.log('Animation completed!');
+  }
   return (
     <div className={styles.container}>
       <div className={styles.board}>
@@ -216,7 +220,13 @@ export default function Home() {
         </div>
       {!(gameState.isGaming||gameState.isGameFinished||gameState.isGameOverNotice)&&(
         <div className={styles.titleBoard}>
-          タイピングゲーム
+          <BlurText 
+          text='タ イ ピ ン グ ゲ ー ム'
+          delay={200}
+          animateBy='words'
+          direction='top'
+          onAnimationComplete={handleAnimationComplete}
+          className='text-2xl mb-8'/>
           <Button onClick={startGame} variant="contained">Start</Button>
         </div>)}
       </div>
