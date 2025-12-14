@@ -8,6 +8,7 @@ import ResultScreen from './ResultScreen';
 import { conversion } from './Conversion';
 import Button from '@mui/material/Button';
 import BlurText from './BitsTool';
+import { GenreForm } from './GenerateForm'; 
 
 type SetState<T>=React.Dispatch<React.SetStateAction<T>>;
 const updateState=(keyPressed:string,currentState:GameState,setGameState:SetState<GameState>,typingData:TypingItem[])=>{
