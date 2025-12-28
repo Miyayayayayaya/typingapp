@@ -9,6 +9,7 @@ import { conversion } from './Conversion';
 import Button from '@mui/material/Button';
 import BlurText from './BitsTool';
 import Link from 'next/link';
+import { pre } from 'motion/react-client';
 
 type SetState<T>=React.Dispatch<React.SetStateAction<T>>;
 const updateState=(keyPressed:string,currentState:GameState,setGameState:SetState<GameState>,typingData:TypingItem[])=>{
@@ -82,12 +83,26 @@ const updateState=(keyPressed:string,currentState:GameState,setGameState:SetStat
 };
 
 const initialProblem=typingGameData[0];
+const getInitialData=()=>{
+  if(typeof window!=="undefined"){
+    const saved=localStorage.getItem("generatedTypingData");
+    if(saved){
+      try{
+        return JSON.parse(saved);
+      }catch(e){
+        console.error("データ解析エラー",e);
+      }
+    }
+  }
+  return typingGameData;
+}
 
 export default function Home() {
+  const [currentData,setCurrentData]=useState(getInitialData);
   const [gameState,setGameState]=useState<GameState>({
     currentProblemIndex:0,
-    currentTargetText:initialProblem.typingTarget,
-    displayTargetText:initialProblem.text,
+    currentTargetText:currentData[0].typingTarget,
+    displayTargetText:currentData[0].text,
     inputCount:0,
     isMistake: false,
     isConversion:false,
@@ -101,6 +116,9 @@ export default function Home() {
     isResetting:false,
     isGameOverNotice:false,
   });
+  useEffect(()=>{
+    localStorage.removeItem("generatedTypingData");
+  },[]);
   const [timerId,setTimerId]=useState<number|null>(null);
   const totalTargetKeysStrokes=typingGameData.reduce((sum,item)=>sum+item.typingTarget.length,0);
   const renderText=(inputCount:number,isMistake:boolean,currentTargetText:string)=>{

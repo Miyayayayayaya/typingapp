@@ -1,21 +1,21 @@
 'use client'
 import { useState } from "react"
+import { useRouter } from "next/navigation";
 import {gemini} from '../lib/gemini'
 import styles from '../page.module.css';
 import Link from 'next/link';
-import { Content } from "next/font/google";
 export default function ProblemGenerator(){
     const [topic,setTopic]=useState("");
-    const [generatedData,setGeneratedData]=useState("");
     const [loading,setLoading]=useState(false);
+    const router=useRouter();
     const generateProblems=async()=>{
         if(!topic.trim()) return;
         setLoading(true);
         const prompt=`タイピングゲームの問題を5問作成してください。
         テーマ: ${topic}
-        以下のJSON形式で出力してください。
+        出力は必ず以下のJSON形式の配列のみにしてください。余計な説明文は一切含めないでください。
         [
-            { "text": "日本語の文章", "typingTarget": "alphabet input" }
+            { "text": "日本語の文章", "typingTarget": "alphabet" }
         ]`;
         try{
             const result=await gemini.models.generateContent({
@@ -23,8 +23,12 @@ export default function ProblemGenerator(){
                 contents:prompt
             });
             const text=result.text
-            if(text!=undefined){
-                setGeneratedData(text);
+            const jsonMatch=text?.match(/\[[\s\S]*\]/);
+            if(jsonMatch){
+                const jsonString=jsonMatch[0];
+                localStorage.setItem("generatedTypingData",jsonString);
+                alert("問題を生成しました！ゲームを開始します。");
+                router.push("/");
             }
         }catch(error){
             console.error("生成エラー：", error);
@@ -46,13 +50,6 @@ export default function ProblemGenerator(){
                 <button onClick={generateProblems} disabled={loading} className={styles.button}>
                     {loading ? "AIが作成中..." : "問題を生成する"}
                 </button>
-
-                {generatedData && (
-                    <pre style={{ background: '#eee', padding: '10px', marginTop: '10px', fontSize: '12px', overflowX: 'auto', width: '90%' }}>
-                        {generatedData}
-                    </pre>
-                )}
-
                 <hr style={{ width: '100%', margin: '20px 0' }} />
                 <Link href="/">
                     <button>メインメニューに戻る</button>
