@@ -8,7 +8,7 @@ import ResultScreen from './ResultScreen';
 import { conversion } from './Conversion';
 import Button from '@mui/material/Button';
 import BlurText from './BitsTool';
-import { GenreForm } from './GenerateForm'; 
+import Link from 'next/link';
 
 type SetState<T>=React.Dispatch<React.SetStateAction<T>>;
 const updateState=(keyPressed:string,currentState:GameState,setGameState:SetState<GameState>,typingData:TypingItem[])=>{
@@ -209,6 +209,13 @@ export default function Home() {
   }
   return (
     <div className={styles.container}>
+      <div style={{ marginBottom: '20px' }}>
+        <Link href="/generator">
+          <button style={{ backgroundColor: '#4CAF50', color: 'white', padding: '10px 20px', borderRadius: '5px', cursor: 'pointer' }}>
+            AIで問題を作る
+          </button>
+        </Link>
+      </div>
       <div className={styles.board}>
         {gameState.isGaming &&(<div className={styles.timerContainer}>
           <div className={`${styles.progressBar} ${gameState.isResetting ? styles.noTransition : ""}`} style={{width:`${(gameState.gameTime/GAME_OVER_TIME)*100}%`}}></div>
