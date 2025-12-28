@@ -83,20 +83,19 @@ const updateState=(keyPressed:string,currentState:GameState,setGameState:SetStat
 };
 
 const initialProblem=typingGameData[0];
-const getInitialData=()=>{
-  if(typeof window!=="undefined"){
-    const saved=localStorage.getItem("generatedTypingData");
-    if(saved){
-      try{
-        return JSON.parse(saved);
-      }catch(e){
-        console.error("データ解析エラー",e);
-      }
+const getInitialData = () => {
+  if (typeof window === "undefined") return typingGameData;
+  const saved = localStorage.getItem("generatedTypingData");
+  console.log("getInitialDataが取得した生データ:", saved); // ここをチェック！
+  if (saved) {
+    try {
+      return JSON.parse(saved);
+    } catch (e) {
+      console.error("JSONパース失敗:", e);
     }
   }
   return typingGameData;
-}
-
+};
 export default function Home() {
   const [currentData,setCurrentData]=useState(getInitialData);
   const [gameState,setGameState]=useState<GameState>({
@@ -116,9 +115,15 @@ export default function Home() {
     isResetting:false,
     isGameOverNotice:false,
   });
-  useEffect(()=>{
-    localStorage.removeItem("generatedTypingData");
-  },[]);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("generatedTypingData");
+    }
+  }, []); // currentData が変わったときに実行
+  useEffect(() => {
+    console.log("【useEffect内】LocalStorageの中身:", localStorage.getItem("generatedTypingData"));
+    console.log("【useEffect内】現在のcurrentData:", currentData);
+  }, [currentData]);
   const [timerId,setTimerId]=useState<number|null>(null);
   const totalTargetKeysStrokes=typingGameData.reduce((sum,item)=>sum+item.typingTarget.length,0);
   const renderText=(inputCount:number,isMistake:boolean,currentTargetText:string)=>{
@@ -137,7 +142,7 @@ export default function Home() {
     })
   }
   const startGame=()=>{
-    const firstProblem=typingGameData[0]?.text||"エラー";
+    const firstProblem=currentData[gameState.currentProblemIndex]?.text||"エラー";
     if(firstProblem==="エラー"){
       console.error("出題リストが空です.");
       return;
@@ -227,6 +232,13 @@ export default function Home() {
   }
   return (
     <div className={styles.container}>
+    <div style={{ marginBottom: '20px' }}>
+      <Link href="/generator">
+        <button style={{ backgroundColor: '#4CAF50', color: 'white', padding: '10px 20px', borderRadius: '5px', cursor: 'pointer' }}>
+          AIで問題を作る
+        </button>
+      </Link>
+    </div>
       <div className={styles.board}>
         {gameState.isGaming &&(<div className={styles.timerContainer}>
           <div className={`${styles.progressBar} ${gameState.isResetting ? styles.noTransition : ""}`} style={{width:`${(gameState.gameTime/GAME_OVER_TIME)*100}%`}}></div>
