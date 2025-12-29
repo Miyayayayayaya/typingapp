@@ -13,10 +13,16 @@ export default function ProblemGenerator(){
         setLoading(true);
         const prompt=`タイピングゲームの問題を5問作成してください。
         テーマ: ${topic}
-        出力は必ず以下のJSON形式の配列のみにしてください。余計な説明文は一切含めないでください。
+        # 出力ルール
+        1. 日本語の文章(text)と、そのタイピング用アルファベット(typingTarget)を対にしてください。
+        2. typingTarget は、必ず「すべて小文字」のアルファベットで出力してください。大文字は一切禁止です。
+        3. ヘボン式ローマ字を基本にしてください。
+        4. 出力は以下のJSON配列形式のみとし、説明文は含めないでください。
         [
-            { "text": "日本語の文章", "typingTarget": "alphabet" }
-        ]`;
+        { "text": "こんにちは", "typingTarget": "konnichiha" },
+        { "text": "ありがとう", "typingTarget": "arigatou" }
+        ]
+        `;
         try{
             const result=await gemini.models.generateContent({
                 model:'gemini-2.5-flash-lite',

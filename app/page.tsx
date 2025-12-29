@@ -9,8 +9,6 @@ import { conversion } from './Conversion';
 import Button from '@mui/material/Button';
 import BlurText from './BitsTool';
 import Link from 'next/link';
-import { pre } from 'motion/react-client';
-
 type SetState<T>=React.Dispatch<React.SetStateAction<T>>;
 const updateState=(keyPressed:string,currentState:GameState,setGameState:SetState<GameState>,typingData:TypingItem[])=>{
   if(!currentState.isGaming)return;
@@ -54,7 +52,6 @@ const updateState=(keyPressed:string,currentState:GameState,setGameState:SetStat
             inputCount:0,
             isConversion:false,
             currentProblemIndex:nextIndex,
-            
             isResetting:false,
             isMistake:false,
           }));
@@ -82,8 +79,7 @@ const updateState=(keyPressed:string,currentState:GameState,setGameState:SetStat
   }));
 };
 
-const initialProblem=typingGameData[0];
-const getInitialData = () => {
+const getInitialData = () :TypingItem[]=> {
   if (typeof window === "undefined") return typingGameData;
   const saved = localStorage.getItem("generatedTypingData");
   console.log("getInitialDataが取得した生データ:", saved); // ここをチェック！
@@ -97,7 +93,7 @@ const getInitialData = () => {
   return typingGameData;
 };
 export default function Home() {
-  const [currentData,setCurrentData]=useState(getInitialData);
+  const [currentData,setCurrentData]=useState<TypingItem[[]]>(getInitialData);
   const [gameState,setGameState]=useState<GameState>({
     currentProblemIndex:0,
     currentTargetText:currentData[0].typingTarget,
@@ -115,6 +111,7 @@ export default function Home() {
     isResetting:false,
     isGameOverNotice:false,
   });
+  console.log("今入っている問題",currentData)
   useEffect(() => {
     if (currentData&&currentData.length>0) {
       setGameState(prev=>({
@@ -127,7 +124,7 @@ export default function Home() {
     }
   }, [currentData]); // currentData が変わったときに実行
   const [timerId,setTimerId]=useState<number|null>(null);
-  const totalTargetKeysStrokes=typingGameData.reduce((sum,item)=>sum+item.typingTarget.length,0);
+  const totalTargetKeysStrokes=currentData.reduce((sum,item)=>sum+item.typingTarget.length,0);
   const renderText=(inputCount:number,isMistake:boolean,currentTargetText:string)=>{
     return currentTargetText.split('').map((char,i)=>{
       let className:string="";
@@ -151,8 +148,8 @@ export default function Home() {
     }
     setGameState(prev=>({
       ...prev,
-      currentTargetText:initialProblem.typingTarget,
-      displayTargetText:initialProblem.text,
+      currentTargetText:currentData[0].typingTarget,
+      displayTargetText:currentData[0].text,
       isGaming:true,
       inputCount:0,
       isMistake:false,
@@ -167,13 +164,13 @@ export default function Home() {
   }
   useEffect(()=>{
     const handleKeyDown=(event:KeyboardEvent)=>{
-      updateState(event.key,gameState,setGameState,typingGameData);
+      updateState(event.key,gameState,setGameState,currentData);
     };
     document.addEventListener('keydown',handleKeyDown);
     return ()=>{
       document.removeEventListener('keydown',handleKeyDown);
     }
-  },[gameState,setGameState])
+  },[gameState,setGameState,currentData])
   const GAME_OVER_TIME=10;
   useEffect(()=>{
     let intervalId:number|null=null;
