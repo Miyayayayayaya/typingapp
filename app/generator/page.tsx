@@ -26,10 +26,11 @@ export default function ProblemGenerator(){
             const jsonMatch=text?.match(/\[[\s\S]*\]/);
             if(jsonMatch){
                 const jsonString=jsonMatch[0];
-                console.log("今から保存する内容:", jsonString);
                 localStorage.setItem("generatedTypingData",jsonString);
+                console.log("保存直後の確認:", localStorage.getItem("generatedTypingData"));
                 alert("問題を生成しました！ゲームを開始します。");
-                router.push("/");
+                //router.push("/");
+                window.location.href="/";
             }
         }catch(error){
             console.error("生成エラー：", error);

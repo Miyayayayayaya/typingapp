@@ -87,11 +87,11 @@ const getInitialData = () => {
   if (typeof window === "undefined") return typingGameData;
   const saved = localStorage.getItem("generatedTypingData");
   console.log("getInitialDataが取得した生データ:", saved); // ここをチェック！
-  if (saved) {
+  if (saved&&saved!=="null") {
     try {
       return JSON.parse(saved);
     } catch (e) {
-      console.error("JSONパース失敗:", e);
+      return typingGameData
     }
   }
   return typingGameData;
@@ -116,14 +116,16 @@ export default function Home() {
     isGameOverNotice:false,
   });
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("generatedTypingData");
+    if (currentData&&currentData.length>0) {
+      setGameState(prev=>({
+        ...prev,
+        currentTargetText:currentData[0].typingTarget,
+        displayTargetText:currentData[0].text,
+        currentProblemIndex:0,
+      }))
+      //localStorage.removeItem("generatedTypingData");
     }
-  }, []); // currentData が変わったときに実行
-  useEffect(() => {
-    console.log("【useEffect内】LocalStorageの中身:", localStorage.getItem("generatedTypingData"));
-    console.log("【useEffect内】現在のcurrentData:", currentData);
-  }, [currentData]);
+  }, [currentData]); // currentData が変わったときに実行
   const [timerId,setTimerId]=useState<number|null>(null);
   const totalTargetKeysStrokes=typingGameData.reduce((sum,item)=>sum+item.typingTarget.length,0);
   const renderText=(inputCount:number,isMistake:boolean,currentTargetText:string)=>{
