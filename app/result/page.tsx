@@ -19,6 +19,9 @@ export default function ResultScreen(){
     if (!results){
         return <p>結果を処理中です...</p>
     }
+    const handleRetry=()=>{
+        window.location.href="/?retry=true";
+    }
     return(
         <div className={styles.resultContainer}>
             <h2>Result</h2>
@@ -29,6 +32,7 @@ export default function ResultScreen(){
             <Link href="/">
                 <button>メインメニューに戻る</button>
             </Link>
+            <button onClick={handleRetry}>もう一度遊ぶ</button>
         </div>
         
     )

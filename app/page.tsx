@@ -1,10 +1,10 @@
 "use client";
 import styles from './page.module.css';
 import typingGameData from './date';
-import {useState,useEffect} from 'react';
+import {useState,useEffect,useRef} from 'react';
 import TypingItem from './types/types';
 import {GameState} from './types/state';
-import ResultScreen from './result/page';
+import { useSearchParams } from 'next/navigation';
 import { conversion } from './Conversion';
 import Button from '@mui/material/Button';
 import BlurText from './BitsTool';
@@ -121,6 +121,9 @@ export default function Home() {
     isResetting:false,
     isGameOverNotice:false,
   });
+  const searchParams=useSearchParams();
+  const isRetry=searchParams.get('retry')==='true'
+  const hasStarted=useRef(false);
   useEffect(() => {
     if (currentData&&currentData.length>0) {
       setGameState(prev=>({
@@ -129,7 +132,6 @@ export default function Home() {
         displayTargetText:currentData[0].text,
         currentProblemIndex:0,
       }))
-      localStorage.removeItem("generatedTypingData");
     }
   }, [currentData]); // currentData が変わったときに実行
   const [timerId,setTimerId]=useState<number|null>(null);
@@ -171,6 +173,14 @@ export default function Home() {
       gameTime:0,
     }));
   }
+  useEffect(()=>{
+    if(isRetry&&!hasStarted.current){
+    hasStarted.current=true;
+    startGame();
+    window.history.replaceState(null,'','/');
+  }
+  },[])
+  
   useEffect(()=>{
     const handleKeyDown=(event:KeyboardEvent)=>{
       updateState(event.key,gameState,setGameState,currentData,totalTargetKeysStrokes);
