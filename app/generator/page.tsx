@@ -1,7 +1,7 @@
 'use client'
 import { useState } from "react"
 import { useRouter } from "next/navigation";
-import TypingItem from '../types';
+import TypingItem from '../types/types';
 import {gemini} from '../lib/gemini'
 import styles from '../page.module.css';
 import Link from 'next/link';

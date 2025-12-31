@@ -2,18 +2,17 @@
 import styles from './page.module.css';
 import typingGameData from './date';
 import {useState,useEffect} from 'react';
-import TypingItem from './types';
-import {GameState} from './state';
-import ResultScreen from './ResultScreen';
+import TypingItem from './types/types';
+import {GameState} from './types/state';
+import ResultScreen from './result/page';
 import { conversion } from './Conversion';
 import Button from '@mui/material/Button';
 import BlurText from './BitsTool';
 import Link from 'next/link';
 type SetState<T>=React.Dispatch<React.SetStateAction<T>>;
-const updateState=(keyPressed:string,currentState:GameState,setGameState:SetState<GameState>,typingData:TypingItem[])=>{
+const updateState=(keyPressed:string,currentState:GameState,setGameState:SetState<GameState>,typingData:TypingItem[],totalStrokes:number)=>{
   if(!currentState.isGaming)return;
   const nextChar=currentState.currentTargetText[currentState.inputCount];
-  console.log(`入力されたキー: ${keyPressed}, 待機中の文字: "${nextChar}" (文字コード: ${nextChar?.charCodeAt(0)})`);
   let newInputCount=currentState.inputCount;
   if (keyPressed.length===1&&keyPressed!==nextChar){
     const newText=conversion(keyPressed,currentState,newInputCount)
@@ -66,8 +65,18 @@ const updateState=(keyPressed:string,currentState:GameState,setGameState:SetStat
           isConversion:false,
           isGameFinished:true,
           isGameOverNotice:true,
-          displayTargetText:"ゲームクリア！！！",
         }));
+        const resultData={
+          gameState: {
+            ...currentState,
+            isGaming: false,
+            endTime: Date.now(),
+            isGameFinished: true,
+          },
+          totalKeystrokes: totalStrokes,
+        };
+        localStorage.setItem("lastGameResult",JSON.stringify(resultData));
+        window.location.href="/result";
         return;
       }
     }
@@ -164,7 +173,7 @@ export default function Home() {
   }
   useEffect(()=>{
     const handleKeyDown=(event:KeyboardEvent)=>{
-      updateState(event.key,gameState,setGameState,currentData);
+      updateState(event.key,gameState,setGameState,currentData,totalTargetKeysStrokes);
     };
     document.addEventListener('keydown',handleKeyDown);
     return ()=>{
@@ -176,25 +185,32 @@ export default function Home() {
     let intervalId:number|null=null;
     if (gameState.isGaming&&gameState.isTimerActive){
       intervalId=window.setInterval(()=>{
-        setGameState(prev=>{
-          const newGameTime=prev.gameTime+1;
-          if(newGameTime>=GAME_OVER_TIME){
-            return{
-              ...prev,
-              isGaming:false,
-              isTimerActive:false,
-              isGameFinished:false,
-              endTime:Date.now(),
-              displayTargetText:'時間切れ！！！',
-              gameTime:newGameTime,
-              isGameOverNotice:true,
-            };
-          }
-          return{
-            ...prev,
-            gameTime:newGameTime
+        if(gameState.gameTime+1>=GAME_OVER_TIME){
+          const finalState={
+            ...gameState,
+            gameTime:gameState.gameTime+1,
+            isGaming:false,
+            isTimerActive:false,
+            isGameFinished:false,
+            endTime:Date.now(),
+            displayTargetText:'時間切れ！！！',
+            isGameOverNotice:true,
           };
-        });
+          localStorage.setItem("lastGameResult",JSON.stringify({
+            gameState:finalState,
+            totalKeystrokes: totalTargetKeysStrokes,
+          }));
+          setGameState(finalState);
+          setTimeout(()=>{
+            window.location.href="/result";
+          },1500);
+          if (intervalId) clearInterval(intervalId);
+          return;
+        }
+        setGameState(prev=>({
+          ...prev,
+          gameTime:prev.gameTime+1
+        }));
       },1000);
     }
     return()=>{
@@ -206,7 +222,7 @@ export default function Home() {
         setTimerId(null)
       }
     };
-  },[gameState.isGaming,gameState.isTimerActive,timerId,setGameState]);
+  },[gameState.isGaming,gameState.isTimerActive,gameState.gameTime,timerId,setGameState,totalTargetKeysStrokes]);
 
   useEffect(()=>{
     let timeoutId:number|null=null;
@@ -244,7 +260,7 @@ export default function Home() {
         </div>)}
         <p className={styles.displayArea}>{(gameState.isGaming||gameState.isGameOverNotice)?(gameState.displayTargetText):("")}</p>
         <div className={styles.typingText}>
-          {gameState.isGaming?(renderText(gameState.inputCount,gameState.isMistake,gameState.currentTargetText)):gameState.isGameFinished?(<ResultScreen gameState={gameState} totalKeystrokes={totalTargetKeysStrokes} startGame={startGame}/>):(
+          {gameState.isGaming?(renderText(gameState.inputCount,gameState.isMistake,gameState.currentTargetText)):gameState.isGameFinished?(<Link href="/result" gameState={gameState} totalKeystrokes={totalTargetKeysStrokes} startGame={startGame}/>):(
         ("")
       )}
         </div>

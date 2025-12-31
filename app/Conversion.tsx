@@ -1,4 +1,4 @@
-import {GameState} from './state';
+import {GameState} from './types/state';
 
 
 export const conversion=(keyPressed:string,currentState:GameState,newInputCount:number,)=>{

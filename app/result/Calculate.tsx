@@ -1,5 +1,5 @@
-import { GameState } from "./state";
-import {Results} from './results'
+import { GameState } from "../types/state";
+import {Results} from '../types/results'
 export const calculateResults=(state:GameState,totalKeystrokes:number):Results|null=>{
     if(!state.startTime||!state.endTime){
     return null;

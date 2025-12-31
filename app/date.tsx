@@ -1,4 +1,4 @@
-import TypingItem from './types';
+import TypingItem from './types/types';
 
 const typingGameData: TypingItem[]=[
     {

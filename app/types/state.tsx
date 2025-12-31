@@ -17,9 +17,8 @@ export interface GameState{
 }
 
 export interface ResultsState{
-    gameState:GameState;
+    gameState:GameState|null;
     totalKeystrokes:number;
-    startGame:()=>void;
 }
 
 
