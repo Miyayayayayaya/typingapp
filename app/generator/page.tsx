@@ -1,6 +1,7 @@
 'use client'
 import { useState } from "react"
 import { useRouter } from "next/navigation";
+import TypingItem from '../types';
 import {gemini} from '../lib/gemini'
 import styles from '../page.module.css';
 import Link from 'next/link';
@@ -22,6 +23,10 @@ export default function ProblemGenerator(){
         { "text": "こんにちは", "typingTarget": "konnichiha" },
         { "text": "ありがとう", "typingTarget": "arigatou" }
         ]
+        # typingTarget の厳格なルール
+        - スペース、カンマ、ピリオドなどの記号は一切含めないでください。
+        - 「konnichiha」のように、連続したアルファベットのみで構成してください。
+        - 英語の文章の場合も、単語間のスペースを詰めて「thisisapen」のように出力してください
         `;
         try{
             const result=await gemini.models.generateContent({
@@ -32,14 +37,19 @@ export default function ProblemGenerator(){
             const jsonMatch=text?.match(/\[[\s\S]*\]/);
             if(jsonMatch){
                 const jsonString=jsonMatch[0];
-                localStorage.setItem("generatedTypingData",jsonString);
+                const rawData=JSON.parse(jsonString) as TypingItem[];
+                const formattedData=rawData.map((item)=>({
+                    ...item,
+                    typingTarget:item.typingTarget.toLowerCase().replace(/[\s.,!?;:・]/g,"")
+                }));
+                localStorage.setItem("generatedTypingData",JSON.stringify(formattedData));
                 console.log("保存直後の確認:", localStorage.getItem("generatedTypingData"));
                 alert("問題を生成しました！ゲームを開始します。");
-                //router.push("/");
                 window.location.href="/";
             }
         }catch(error){
             console.error("生成エラー：", error);
+            alert("問題の生成中にエラーが発生しました。")
         }finally{
             setLoading(false);
         }

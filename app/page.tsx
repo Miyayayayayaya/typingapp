@@ -13,6 +13,7 @@ type SetState<T>=React.Dispatch<React.SetStateAction<T>>;
 const updateState=(keyPressed:string,currentState:GameState,setGameState:SetState<GameState>,typingData:TypingItem[])=>{
   if(!currentState.isGaming)return;
   const nextChar=currentState.currentTargetText[currentState.inputCount];
+  console.log(`入力されたキー: ${keyPressed}, 待機中の文字: "${nextChar}" (文字コード: ${nextChar?.charCodeAt(0)})`);
   let newInputCount=currentState.inputCount;
   if (keyPressed.length===1&&keyPressed!==nextChar){
     const newText=conversion(keyPressed,currentState,newInputCount)
@@ -93,7 +94,7 @@ const getInitialData = () :TypingItem[]=> {
   return typingGameData;
 };
 export default function Home() {
-  const [currentData,setCurrentData]=useState<TypingItem[[]]>(getInitialData);
+  const [currentData,setCurrentData]=useState<TypingItem[]>(getInitialData);
   const [gameState,setGameState]=useState<GameState>({
     currentProblemIndex:0,
     currentTargetText:currentData[0].typingTarget,
@@ -111,7 +112,6 @@ export default function Home() {
     isResetting:false,
     isGameOverNotice:false,
   });
-  console.log("今入っている問題",currentData)
   useEffect(() => {
     if (currentData&&currentData.length>0) {
       setGameState(prev=>({
@@ -120,7 +120,7 @@ export default function Home() {
         displayTargetText:currentData[0].text,
         currentProblemIndex:0,
       }))
-      //localStorage.removeItem("generatedTypingData");
+      localStorage.removeItem("generatedTypingData");
     }
   }, [currentData]); // currentData が変わったときに実行
   const [timerId,setTimerId]=useState<number|null>(null);
